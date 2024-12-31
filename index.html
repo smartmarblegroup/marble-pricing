@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marble Business Pricing Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Pricing Calculator</h2>
+
+    <label for="slabCost">Cost per Slab (£):</label>
+    <input type="number" id="slabCost" min="0" value="450">
+
+    <label for="slabLength">Slab Length (m):</label>
+    <input type="number" id="slabLength" step="0.1" value="3.2">
+
+    <label for="slabWidth">Slab Width (m):</label>
+    <input type="number" id="slabWidth" step="0.1" value="1.6">
+
+    <label for="templateFit">Add Template and Fit (£650):</label>
+    <select id="templateFit">
+      <option value="0">No</option>
+      <option value="650">Yes</option>
+    </select>
+
+    <label for="customerType">Customer Type:</label>
+    <select id="customerType">
+      <option value="550">Trade</option>
+      <option value="750">Private</option>
+    </select>
+
+    <!-- Worktop Size Inputs -->
+    <div id="worktops">
+      <label for="worktopSize1">Worktop Size 1 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize1" placeholder="e.g., 2.5x1.2">
+    
+      <label for="worktopSize2">Worktop Size 2 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize2" placeholder="e.g., 1.8x0.9">
+    
+      <label for="worktopSize3">Worktop Size 3 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize3" placeholder="e.g., 2.3x1.2">
+    
+      <label for="worktopSize4">Worktop Size 4 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize4" placeholder="e.g., 2.0x1.0">
+    
+      <label for="worktopSize5">Worktop Size 5 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize5" placeholder="e.g., 2.5x1.0">
+    
+      <label for="worktopSize6">Worktop Size 6 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize6" placeholder="e.g., 3.0x1.5">
+    
+      <label for="worktopSize7">Worktop Size 7 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize7" placeholder="e.g., 2.4x1.0">
+    
+      <label for="worktopSize8">Worktop Size 8 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize8" placeholder="e.g., 2.3x1.0">
+    
+      <label for="worktopSize9">Worktop Size 9 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize9" placeholder="e.g., 3.0x1.5">
+    
+      <label for="worktopSize10">Worktop Size 10 (Length x Width in m²):</label>
+      <input type="text" id="worktopSize10" placeholder="e.g., 2.0x1.2">
+    </div>
+
+    <button onclick="calculatePrice()">Calculate</button>
+
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    function calculatePrice() {
+      const slabCost = parseFloat(document.getElementById("slabCost").value);
+      const slabLength = parseFloat(document.getElementById("slabLength").value);
+      const slabWidth = parseFloat(document.getElementById("slabWidth").value);
+      const templateFit = parseFloat(document.getElementById("templateFit").value);
+      const customerType = parseFloat(document.getElementById("customerType").value);
+      
+      // Collect worktop sizes
+      let totalArea = 0;
+      let worktopSizes = [];
+      for (let i = 1; i <= 10; i++) {
+        const sizeInput = document.getElementById("worktopSize" + i).value;
+        if (sizeInput) {
+          const dimensions = sizeInput.split('x');
+          const length = parseFloat(dimensions[0]);
+          const width = parseFloat(dimensions[1]);
+          const area = length * width;
+          worktopSizes.push({ size: sizeInput, area: area });
+          totalArea += area;
+        }
+      }
+
+      // Slab area and number of slabs calculation
+      const slabArea = slabLength * slabWidth;
+      const numberOfSlabs = Math.ceil(totalArea / slabArea);
+      
+      // Fabrication cost based on slabs
+      let fabricationCost = 0;
+      if (numberOfSlabs === 1) fabricationCost = 350;
+      else if (numberOfSlabs === 2) fabricationCost = 550;
+      else if (numberOfSlabs === 3) fabricationCost = 750;
+      else if (numberOfSlabs === 4) fabricationCost = 950;
+      else if (numberOfSlabs >= 5) fabricationCost = 1100;
+
+      // Slab cost and final price calculation
+      const totalSlabCost = numberOfSlabs * slabCost;
+      const finalPrice = totalSlabCost + fabricationCost + templateFit + customerType;
+
+      // Output breakdown
+      let outputHTML = "<h3>Calculation Results:</h3>";
+      outputHTML += "<p>Total Worktop Area: " + totalArea.toFixed(2) + " m²</p>";
+      outputHTML += "<p>Slab Area: " + slabArea.toFixed(2) + " m²</p>";
+      outputHTML += "<p>Number of Slabs Needed: " + numberOfSlabs + "</p>";
+      
+      worktopSizes.forEach(function(worktop) {
+        outputHTML += `<p>Worktop Size: ${worktop.size}, Area: ${worktop.area.toFixed(2)} m²</p>`;
+      });
+      
+      outputHTML += "<h4>Cost Breakdown:</h4>";
+      outputHTML += "<p>Slab Cost: £" + totalSlabCost.toFixed(2) + "</p>";
+      outputHTML += "<p>Fabrication Cost: £" + fabricationCost.toFixed(2) + "</p>";
+      outputHTML += "<p>Template and Fit: £" + templateFit.toFixed(2) + "</p>";
+      outputHTML += "<p>Customer Type Cost: £" + customerType.toFixed(2) + "</p>";
+      outputHTML += "<h3>Total Price: £" + finalPrice.toFixed(2) + "</h3>";
+
+      document.getElementById("output").innerHTML = outputHTML;
+    }
+  </script>
+</body>
+</html>
+
